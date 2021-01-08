@@ -1,6 +1,6 @@
 {
-  "name": "template",
-  "private": true,
+  "name": "laterunless",
+  "private": false,
   "version": "1.0.0",
   "description": "",
   "main": "lib/index.js",
@@ -20,14 +20,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rhdeck/base.git"
+    "url": "https://github.com/rhdeck/node-laterunless.git"
   },
   "author": "Ray Deck",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/rhdeck/base/issues"
+    "url": "https:/github.com/rhdeck/node-laterunless/issues"
   },
-  "homepage": "https://github.com/rhdeck/base#readme",
+  "homepage": "https://github.com/rhdeck/node-laterunless#README",
   "devDependencies": {
     "@commitlint/cli": "^9.1.1",
     "@commitlint/config-conventional": "^9.1.1",
@@ -51,6 +51,7 @@
   ],
   "dependencies": {
     "commander": "^6.2.1",
+    "cross-fetch": "^3.0.6",
     "inquirer": "^7.3.3"
   },
   "liveLink": {

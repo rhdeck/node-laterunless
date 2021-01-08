@@ -39,7 +39,7 @@ Name | Type |
 
 **Returns:** *Promise*<*boolean*\>
 
-Defined in: [index.ts:45](https://github.com/rhdeck/node-laterunless/blob/0741b68/src/index.ts#L45)
+Defined in: [index.ts:45](https://github.com/rhdeck/node-laterunless/blob/a1a640d/src/index.ts#L45)
 
 ___
 
@@ -55,7 +55,7 @@ Name | Type |
 
 **Returns:** *Promise*<{ `date`: Date ; `id`: *string*  }[]\>
 
-Defined in: [index.ts:65](https://github.com/rhdeck/node-laterunless/blob/0741b68/src/index.ts#L65)
+Defined in: [index.ts:65](https://github.com/rhdeck/node-laterunless/blob/a1a640d/src/index.ts#L65)
 
 ___
 
@@ -71,4 +71,4 @@ Name | Type |
 
 **Returns:** *Promise*<*string*\>
 
-Defined in: [index.ts:2](https://github.com/rhdeck/node-laterunless/blob/0741b68/src/index.ts#L2)
+Defined in: [index.ts:2](https://github.com/rhdeck/node-laterunless/blob/a1a640d/src/index.ts#L2)

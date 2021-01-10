@@ -1,26 +1,33 @@
 import fetch from "cross-fetch";
-export async function send({
-  id,
-  date,
-  url,
-  headers,
-  encoding = "JSON",
-  method = "POST",
-  payload,
-  webhookKey,
-}: {
-  id?: string;
-  date: Date;
-  url: string;
-  headers?: { [key: string]: string };
-  encoding?: "JSON" | "FORM";
-  method?: "GET" | "POST";
-  payload: { [key: string]: any };
-  webhookKey: string;
-}) {
+let _cachedKey: string | undefined;
+export async function init(laterUnlessKey: string) {
+  _cachedKey = laterUnlessKey;
+}
+export async function send(
+  {
+    id,
+    date,
+    url,
+    headers,
+    encoding = "JSON",
+    method = "POST",
+    payload,
+  }: {
+    id?: string;
+    date: Date;
+    url: string;
+    headers?: { [key: string]: string };
+    encoding?: "JSON" | "FORM";
+    method?: "GET" | "POST";
+    payload: { [key: string]: any };
+  },
+  laterUnlessKey?: string
+) {
+  if (!laterUnlessKey) laterUnlessKey = _cachedKey;
+  if (!laterUnlessKey) throw new Error("LaterUnless key must be set");
   const response = await fetch("https://rhdtth-api.certitude.tech/add", {
     headers: {
-      Authorization: `Bearer ${webhookKey}`,
+      Authorization: `Bearer ${laterUnlessKey}`,
       "Content-Type": "application/json; charset=utf-8",
     },
     method: "POST",
@@ -42,10 +49,12 @@ export async function send({
     throw new Error(response.statusText);
   }
 }
-export async function cancel(id: string, webhookKey: string) {
+export async function cancel(id: string, laterUnlessKey?: string) {
+  if (!laterUnlessKey) laterUnlessKey = _cachedKey;
+  if (!laterUnlessKey) throw new Error("LaterUnless key must be set");
   const response = await fetch("https://rhdtth-api.certitude.tech/cancel", {
     headers: {
-      Authorization: `Bearer ${webhookKey}`,
+      Authorization: `Bearer ${laterUnlessKey}`,
       "Content-Type": "application/json; charset=utf-8",
     },
     method: "POST",
@@ -62,27 +71,45 @@ export async function cancel(id: string, webhookKey: string) {
 
   return true;
 }
-export async function list(webhookKey: string) {
+export async function listPage(
+  lastCursor?: string,
+  laterUnlessKey?: string
+): Promise<
+  [nextCursor: string | undefined, data: { id: string; date: Date }[]]
+> {
+  const response = await fetch("https://rhdtth-api.certitude.tech/list", {
+    headers: {
+      Authorization: `Bearer ${laterUnlessKey}`,
+      "Content-Type": "application/json; charset=utf-8",
+    },
+    body: JSON.stringify({
+      lastCursor,
+    }),
+    method: "POST",
+  });
+  if (response.status === 200) {
+    const result = <
+      { nextCursor: string | undefined; data: { id: string; date: string }[] }
+    >await response.json();
+    return [
+      result.nextCursor,
+      result.data.map(({ id, date }) => ({ id, date: new Date(date) })),
+    ];
+  } else {
+    throw new Error(response.statusText);
+  }
+}
+export async function list(laterUnlessKey?: string) {
+  if (!laterUnlessKey) laterUnlessKey = _cachedKey;
+  if (!laterUnlessKey) throw new Error("LaterUnless key must be set");
   let data: { id: string; date: Date }[] = [];
-  let lastCursor: undefined | string = undefined;
+  let lastCursor: string | undefined = undefined;
+  let nextCursor: string | undefined = undefined;
+  let results: { id: string; date: Date }[] | undefined;
   do {
-    const response = await fetch("https://rhdtth-api.certitude.tech/list", {
-      headers: {
-        Authorization: `Bearer ${webhookKey}`,
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify({
-        lastCursor,
-      }),
-      method: "POST",
-    });
-    if (response.status === 200) {
-      const obj = <{ id: string; date: string }[]>await response.json();
-      const ids = obj.map(({ id, date }) => ({ id, date: new Date(date) }));
-      data.push(...ids);
-    } else {
-      throw new Error(response.statusText);
-    }
+    [nextCursor, results] = await listPage(lastCursor, laterUnlessKey);
+    if (results) data.concat(results);
+    lastCursor = nextCursor;
   } while (lastCursor);
   return data;
 }

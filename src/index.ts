@@ -1,8 +1,11 @@
 import fetch from "cross-fetch";
 let _cachedKey: string | undefined;
-export async function init(laterUnlessKey: string) {
+let _host: string = "https://api.laterunless.com";
+export async function init(laterUnlessKey: string, host?: string) {
   _cachedKey = laterUnlessKey;
+  if (host) _host = host;
 }
+
 export async function send(
   {
     id,
@@ -25,7 +28,7 @@ export async function send(
 ) {
   if (!laterUnlessKey) laterUnlessKey = _cachedKey;
   if (!laterUnlessKey) throw new Error("LaterUnless key must be set");
-  const response = await fetch("https://rhdtth-api.certitude.tech/add", {
+  const response = await fetch(`${_host}/add`, {
     headers: {
       Authorization: `Bearer ${laterUnlessKey}`,
       "Content-Type": "application/json; charset=utf-8",
@@ -52,7 +55,7 @@ export async function send(
 export async function cancel(id: string, laterUnlessKey?: string) {
   if (!laterUnlessKey) laterUnlessKey = _cachedKey;
   if (!laterUnlessKey) throw new Error("LaterUnless key must be set");
-  const response = await fetch("https://rhdtth-api.certitude.tech/cancel", {
+  const response = await fetch(`${_host}/cancel`, {
     headers: {
       Authorization: `Bearer ${laterUnlessKey}`,
       "Content-Type": "application/json; charset=utf-8",
@@ -77,7 +80,7 @@ export async function listPage(
 ): Promise<
   [nextCursor: string | undefined, data: { id: string; date: Date }[]]
 > {
-  const response = await fetch("https://rhdtth-api.certitude.tech/list", {
+  const response = await fetch(`${_host}/list`, {
     headers: {
       Authorization: `Bearer ${laterUnlessKey}`,
       "Content-Type": "application/json; charset=utf-8",

@@ -12,9 +12,9 @@ npx laterunless [options]
 
 <a name="_librarymd"></a>
 
-laterunless - v1.1.0
+laterunless - v1.1.1
 
-# laterunless - v1.1.0
+# laterunless - v1.1.1
 
 ## Index
 
@@ -41,23 +41,24 @@ Name | Type |
 
 **Returns:** *Promise*<*boolean*\>
 
-Defined in: [index.ts:52](https://github.com/rhdeck/node-laterunless/blob/220a159/src/index.ts#L52)
+Defined in: [index.ts:55](https://github.com/rhdeck/node-laterunless/blob/c6accf2/src/index.ts#L55)
 
 ___
 
 ### init
 
-▸ **init**(`laterUnlessKey`: *string*): *Promise*<*void*\>
+▸ **init**(`laterUnlessKey`: *string*, `host?`: *string*): *Promise*<*void*\>
 
 #### Parameters:
 
 Name | Type |
 ------ | ------ |
 `laterUnlessKey` | *string* |
+`host?` | *string* |
 
 **Returns:** *Promise*<*void*\>
 
-Defined in: [index.ts:3](https://github.com/rhdeck/node-laterunless/blob/220a159/src/index.ts#L3)
+Defined in: [index.ts:4](https://github.com/rhdeck/node-laterunless/blob/c6accf2/src/index.ts#L4)
 
 ___
 
@@ -73,7 +74,7 @@ Name | Type |
 
 **Returns:** *Promise*<{ `date`: Date ; `id`: *string*  }[]\>
 
-Defined in: [index.ts:102](https://github.com/rhdeck/node-laterunless/blob/220a159/src/index.ts#L102)
+Defined in: [index.ts:105](https://github.com/rhdeck/node-laterunless/blob/c6accf2/src/index.ts#L105)
 
 ___
 
@@ -90,7 +91,7 @@ Name | Type |
 
 **Returns:** *Promise*<[nextCursor: string, data: object[]]\>
 
-Defined in: [index.ts:74](https://github.com/rhdeck/node-laterunless/blob/220a159/src/index.ts#L74)
+Defined in: [index.ts:77](https://github.com/rhdeck/node-laterunless/blob/c6accf2/src/index.ts#L77)
 
 ___
 
@@ -107,4 +108,4 @@ Name | Type |
 
 **Returns:** *Promise*<*string*\>
 
-Defined in: [index.ts:6](https://github.com/rhdeck/node-laterunless/blob/220a159/src/index.ts#L6)
+Defined in: [index.ts:9](https://github.com/rhdeck/node-laterunless/blob/c6accf2/src/index.ts#L9)

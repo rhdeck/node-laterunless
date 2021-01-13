@@ -1,7 +1,7 @@
 import fetch from "cross-fetch";
 let _cachedKey: string | undefined;
 let _host: string = "https://api.laterunless.com";
-export async function init(laterUnlessKey: string, host?: string) {
+export function init(laterUnlessKey: string, host?: string) {
   _cachedKey = laterUnlessKey;
   if (host) _host = host;
 }

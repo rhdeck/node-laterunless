@@ -28,6 +28,12 @@ export async function send(
 ) {
   if (!laterUnlessKey) laterUnlessKey = _cachedKey;
   if (!laterUnlessKey) throw new Error("LaterUnless key must be set");
+  const headerArr =
+    headers &&
+    Object.entries(headers).map(([key, value]) => ({
+      Key: key,
+      Value: value,
+    }));
   const response = await fetch(`${_host}/add`, {
     headers: {
       Authorization: `Bearer ${laterUnlessKey}`,
@@ -38,7 +44,7 @@ export async function send(
     body: JSON.stringify({
       id,
       date,
-      headers,
+      headers: headerArr,
       encoding,
       method,
       url,

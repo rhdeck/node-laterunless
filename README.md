@@ -12,9 +12,9 @@ npx laterunless [options]
 
 <a name="_librarymd"></a>
 
-laterunless - v1.1.3
+laterunless - v1.2.0
 
-# laterunless - v1.1.3
+# laterunless - v1.2.0
 
 ## Index
 
@@ -25,6 +25,8 @@ laterunless - v1.1.3
 * [list](#list)
 * [listPage](#listpage)
 * [send](#send)
+* [sendWithoutWaiting](#sendwithoutwaiting)
+* [setDebug](#setdebug)
 
 ## Functions
 
@@ -41,7 +43,7 @@ Name | Type |
 
 **Returns:** *Promise*<*boolean*\>
 
-Defined in: [index.ts:61](https://github.com/rhdeck/node-laterunless/blob/b8ae18c/src/index.ts#L61)
+Defined in: [index.ts:168](https://github.com/rhdeck/node-laterunless/blob/b1086fb/src/index.ts#L168)
 
 ___
 
@@ -58,7 +60,7 @@ Name | Type |
 
 **Returns:** *void*
 
-Defined in: [index.ts:4](https://github.com/rhdeck/node-laterunless/blob/b8ae18c/src/index.ts#L4)
+Defined in: [index.ts:5](https://github.com/rhdeck/node-laterunless/blob/b1086fb/src/index.ts#L5)
 
 ___
 
@@ -74,7 +76,7 @@ Name | Type |
 
 **Returns:** *Promise*<{ `date`: Date ; `id`: *string*  }[]\>
 
-Defined in: [index.ts:111](https://github.com/rhdeck/node-laterunless/blob/b8ae18c/src/index.ts#L111)
+Defined in: [index.ts:263](https://github.com/rhdeck/node-laterunless/blob/b1086fb/src/index.ts#L263)
 
 ___
 
@@ -91,21 +93,54 @@ Name | Type |
 
 **Returns:** *Promise*<[nextCursor: string, data: object[]]\>
 
-Defined in: [index.ts:83](https://github.com/rhdeck/node-laterunless/blob/b8ae18c/src/index.ts#L83)
+Defined in: [index.ts:218](https://github.com/rhdeck/node-laterunless/blob/b1086fb/src/index.ts#L218)
 
 ___
 
 ### send
 
-▸ **send**(`__namedParameters`: { `date`: Date ; `encoding?`: *JSON* \| *FORM* ; `headers?`: { [key: string]: *string*;  } ; `id?`: *string* ; `method?`: *GET* \| *POST* ; `payload`: { [key: string]: *any*;  } ; `url`: *string*  }, `laterUnlessKey?`: *string*): *Promise*<*string*\>
+▸ **send**(`__namedParameters`: { `date`: Date ; `debug?`: *boolean* ; `encoding?`: *JSON* \| *FORM* ; `headers?`: { [key: string]: *string*;  } ; `id?`: *string* ; `method?`: *GET* \| *POST* ; `payload`: { [key: string]: *any*;  } ; `url`: *string*  }, `laterUnlessKey?`: *string*): *Promise*<*string*\>
 
 #### Parameters:
 
 Name | Type |
 ------ | ------ |
-`__namedParameters` | { `date`: Date ; `encoding?`: *JSON* \| *FORM* ; `headers?`: { [key: string]: *string*;  } ; `id?`: *string* ; `method?`: *GET* \| *POST* ; `payload`: { [key: string]: *any*;  } ; `url`: *string*  } |
+`__namedParameters` | { `date`: Date ; `debug?`: *boolean* ; `encoding?`: *JSON* \| *FORM* ; `headers?`: { [key: string]: *string*;  } ; `id?`: *string* ; `method?`: *GET* \| *POST* ; `payload`: { [key: string]: *any*;  } ; `url`: *string*  } |
 `laterUnlessKey?` | *string* |
 
 **Returns:** *Promise*<*string*\>
 
-Defined in: [index.ts:9](https://github.com/rhdeck/node-laterunless/blob/b8ae18c/src/index.ts#L9)
+Defined in: [index.ts:13](https://github.com/rhdeck/node-laterunless/blob/b1086fb/src/index.ts#L13)
+
+___
+
+### sendWithoutWaiting
+
+▸ **sendWithoutWaiting**(`__namedParameters`: { `date`: Date ; `debug?`: *boolean* ; `encoding?`: *JSON* \| *FORM* ; `headers?`: { [key: string]: *string*;  } ; `id`: *string* ; `method?`: *GET* \| *POST* ; `payload`: { [key: string]: *any*;  } ; `url`: *string*  }, `laterUnlessKey?`: *string*): *Promise*<*string*\>
+
+#### Parameters:
+
+Name | Type |
+------ | ------ |
+`__namedParameters` | { `date`: Date ; `debug?`: *boolean* ; `encoding?`: *JSON* \| *FORM* ; `headers?`: { [key: string]: *string*;  } ; `id`: *string* ; `method?`: *GET* \| *POST* ; `payload`: { [key: string]: *any*;  } ; `url`: *string*  } |
+`laterUnlessKey?` | *string* |
+
+**Returns:** *Promise*<*string*\>
+
+Defined in: [index.ts:95](https://github.com/rhdeck/node-laterunless/blob/b1086fb/src/index.ts#L95)
+
+___
+
+### setDebug
+
+▸ **setDebug**(`debug?`: *boolean*): *void*
+
+#### Parameters:
+
+Name | Type | Default value |
+------ | ------ | ------ |
+`debug` | *boolean* | true |
+
+**Returns:** *void*
+
+Defined in: [index.ts:9](https://github.com/rhdeck/node-laterunless/blob/b1086fb/src/index.ts#L9)

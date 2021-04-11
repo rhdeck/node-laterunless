@@ -88,6 +88,7 @@ export async function send(
         init,
         e
       );
+    e.request = { uri, init };
     throw e;
   }
 }
@@ -123,24 +124,26 @@ export async function sendWithoutWaiting(
       Key: key,
       Value: value,
     }));
-  try {
-    fetch(`${_host}/add`, {
-      headers: {
-        Authorization: `Bearer ${laterUnlessKey}`,
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      method: "POST",
+  const uri = `${_host}/add`;
+  const init = {
+    headers: {
+      Authorization: `Bearer ${laterUnlessKey}`,
+      "Content-Type": "application/json; charset=utf-8",
+    },
+    method: "POST",
 
-      body: JSON.stringify({
-        id,
-        date,
-        headers: headerArr,
-        encoding,
-        method,
-        url,
-        payload: JSON.stringify(payload),
-      }),
-    });
+    body: JSON.stringify({
+      id,
+      date,
+      headers: headerArr,
+      encoding,
+      method,
+      url,
+      payload: JSON.stringify(payload),
+    }),
+  };
+  try {
+    fetch(uri, init);
     await new Promise<void>((r) => {
       setTimeout(() => {
         r();
@@ -158,13 +161,16 @@ export async function sendWithoutWaiting(
         },
         e
       );
+    e.request = { uri, init };
     throw e;
   }
 }
 export async function cancel(id: string, laterUnlessKey?: string) {
   if (!laterUnlessKey) laterUnlessKey = _cachedKey;
   if (!laterUnlessKey) throw new Error("LaterUnless key must be set");
-  const response = await fetch(`${_host}/cancel`, {
+
+  const uri = `${_host}/cancel`;
+  const init = {
     headers: {
       Authorization: `Bearer ${laterUnlessKey}`,
       "Content-Type": "application/json; charset=utf-8",
@@ -174,14 +180,40 @@ export async function cancel(id: string, laterUnlessKey?: string) {
     body: JSON.stringify({
       id,
     }),
-  });
-  if (response.status === 200) {
-    const { id: resultId } = <{ id: string }>await response.json();
-  } else {
-    throw new Error(response.statusText);
+  };
+  try {
+    const response = await fetch(uri, init);
+    if (response.status === 200) {
+      const { id: resultId } = <{ id: string }>await response.json();
+    } else {
+      if (_isDebug) {
+        console.error(
+          "LATERUNLESS DEBUG",
+          {
+            function: "cancel",
+            type: "response error",
+            message: response.statusText,
+            uri,
+          },
+          init,
+          response
+        );
+      }
+      throw new Error(response.statusText);
+    }
+    return true;
+  } catch (e) {
+    if (_isDebug) {
+      console.error(
+        "LATERUNLESS DEBUG",
+        { function: "cancel", type: "master error", message: e.message, uri },
+        init,
+        e
+      );
+    }
+    e.request = { uri, init };
+    throw e;
   }
-
-  return true;
 }
 export async function listPage(
   lastCursor?: string,
@@ -189,7 +221,8 @@ export async function listPage(
 ): Promise<
   [nextCursor: string | undefined, data: { id: string; date: Date }[]]
 > {
-  const response = await fetch(`${_host}/list`, {
+  const uri = `${_host}/list`;
+  const init = {
     headers: {
       Authorization: `Bearer ${laterUnlessKey}`,
       "Content-Type": "application/json; charset=utf-8",
@@ -198,17 +231,33 @@ export async function listPage(
       lastCursor,
     }),
     method: "POST",
-  });
-  if (response.status === 200) {
-    const result = <
-      { nextCursor: string | undefined; data: { id: string; date: string }[] }
-    >await response.json();
-    return [
-      result.nextCursor,
-      result.data.map(({ id, date }) => ({ id, date: new Date(date) })),
-    ];
-  } else {
-    throw new Error(response.statusText);
+  };
+  try {
+    const response = await fetch(uri, init);
+    if (response.status === 200) {
+      const result = <
+        { nextCursor: string | undefined; data: { id: string; date: string }[] }
+      >await response.json();
+      return [
+        result.nextCursor,
+        result.data.map(({ id, date }) => ({ id, date: new Date(date) })),
+      ];
+    } else {
+      const e = new Error(response.statusText);
+      (<{ response: Response }>(<unknown>e)).response = response;
+      throw e;
+    }
+  } catch (e) {
+    if (_isDebug) {
+      console.error(
+        "LATERUNLESS DEBUG",
+        { function: "listPage", type: "master error", message: e.message, uri },
+        init,
+        e
+      );
+    }
+    e.request = { uri, init };
+    throw e;
   }
 }
 export async function list(laterUnlessKey?: string) {
@@ -218,10 +267,21 @@ export async function list(laterUnlessKey?: string) {
   let lastCursor: string | undefined = undefined;
   let nextCursor: string | undefined = undefined;
   let results: { id: string; date: Date }[] | undefined;
-  do {
-    [nextCursor, results] = await listPage(lastCursor, laterUnlessKey);
-    if (results) data.concat(results);
-    lastCursor = nextCursor;
-  } while (lastCursor);
+  try {
+    do {
+      [nextCursor, results] = await listPage(lastCursor, laterUnlessKey);
+      if (results) data.concat(results);
+      lastCursor = nextCursor;
+    } while (lastCursor);
+  } catch (e) {
+    if (_isDebug) {
+      console.error(
+        "LATERUNLESS DEBUG",
+        { function: "list", type: "master error", message: e.message },
+        e
+      );
+    }
+    throw e;
+  }
   return data;
 }

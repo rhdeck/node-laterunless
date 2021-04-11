@@ -1,9 +1,13 @@
 import fetch from "cross-fetch";
 let _cachedKey: string | undefined;
 let _host: string = "https://api.laterunless.com";
+let _isDebug: boolean = false;
 export function init(laterUnlessKey: string, host?: string) {
   _cachedKey = laterUnlessKey;
   if (host) _host = host;
+}
+export function setDebug(debug: boolean = true) {
+  _isDebug = debug;
 }
 
 export async function send(
@@ -15,6 +19,7 @@ export async function send(
     encoding = "JSON",
     method = "POST",
     payload,
+    debug,
   }: {
     id?: string;
     date: Date;
@@ -23,9 +28,11 @@ export async function send(
     encoding?: "JSON" | "FORM";
     method?: "GET" | "POST";
     payload: { [key: string]: any };
+    debug?: boolean;
   },
   laterUnlessKey?: string
 ) {
+  if (typeof debug === undefined) debug = _isDebug;
   if (!laterUnlessKey) laterUnlessKey = _cachedKey;
   if (!laterUnlessKey) throw new Error("LaterUnless key must be set");
   const headerArr =
@@ -34,7 +41,8 @@ export async function send(
       Key: key,
       Value: value,
     }));
-  const response = await fetch(`${_host}/add`, {
+  const uri = `${_host}/add`;
+  const init = {
     headers: {
       Authorization: `Bearer ${laterUnlessKey}`,
       "Content-Type": "application/json; charset=utf-8",
@@ -50,12 +58,107 @@ export async function send(
       url,
       payload: JSON.stringify(payload),
     }),
-  });
-  if (response.status === 200) {
-    const { id: resultId } = <{ id: string }>await response.json();
-    return resultId;
-  } else {
-    throw new Error(response.statusText);
+  };
+  try {
+    const response = await fetch(uri, init);
+    if (response.status === 200) {
+      const { id: resultId } = <{ id: string }>await response.json();
+      return resultId;
+    } else {
+      if (debug)
+        console.error(
+          "LATERUNLESS DEBUG",
+          {
+            function: "send",
+            type: "response error",
+            message: response.statusText,
+            uri,
+          },
+          init,
+          response
+        );
+
+      throw new Error(response.statusText);
+    }
+  } catch (e) {
+    if (debug)
+      console.error(
+        "LATERUNLESS DEBUG",
+        { function: "send", type: "master error", message: e.message, uri },
+        init,
+        e
+      );
+    throw e;
+  }
+}
+export async function sendWithoutWaiting(
+  {
+    id,
+    date,
+    url,
+    headers,
+    encoding = "JSON",
+    method = "POST",
+    payload,
+    debug,
+  }: {
+    id: string;
+    date: Date;
+    url: string;
+    headers?: { [key: string]: string };
+    encoding?: "JSON" | "FORM";
+    method?: "GET" | "POST";
+    payload: { [key: string]: any };
+    debug?: boolean;
+  },
+  laterUnlessKey?: string
+) {
+  if (typeof debug === undefined) debug = _isDebug;
+  if (!id) throw new Error("id is required in fire-and-forget mode");
+  if (!laterUnlessKey) laterUnlessKey = _cachedKey;
+  if (!laterUnlessKey) throw new Error("LaterUnless key must be set");
+  const headerArr =
+    headers &&
+    Object.entries(headers).map(([key, value]) => ({
+      Key: key,
+      Value: value,
+    }));
+  try {
+    fetch(`${_host}/add`, {
+      headers: {
+        Authorization: `Bearer ${laterUnlessKey}`,
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      method: "POST",
+
+      body: JSON.stringify({
+        id,
+        date,
+        headers: headerArr,
+        encoding,
+        method,
+        url,
+        payload: JSON.stringify(payload),
+      }),
+    });
+    await new Promise<void>((r) => {
+      setTimeout(() => {
+        r();
+      }, 25);
+    });
+    return id;
+  } catch (e) {
+    if (debug)
+      console.error(
+        "LATERUNLESS DEBUG",
+        {
+          function: "sendWithoutWaiting",
+          type: "master error",
+          message: e.message,
+        },
+        e
+      );
+    throw e;
   }
 }
 export async function cancel(id: string, laterUnlessKey?: string) {
